@@ -5,7 +5,7 @@
 /**
  * Initialization Code and shared classes of library sap.ui.documentation.
  */
-sap.ui.define([
+ sap.ui.define([
     "sap/ui/thirdparty/jquery",
     'sap/ui/core/util/LibraryInfo',
     "sap/base/Log",
@@ -50,6 +50,7 @@ sap.ui.define([
 	});
 
 	var _libraryInfoSingleton;
+	var _oAppInfo;
 
 	var DocumentationLibraryInfo = LibraryInfo.extend("sap.ui.documentation.DocumentationLibraryInfo", {});
 
@@ -71,24 +72,27 @@ sap.ui.define([
 	thisLibrary._getAppInfo = function(fnCallback) {
 		var sUrl = sap.ui.require.toUrl("sap-ui-version.json");
 			sUrl = ResourcesUtil.getResourceOriginPath(sUrl);
-
-		jQuery.ajax({
-			url: sUrl,
-			dataType: "json",
-			error: function(xhr, status, e) {
-				Log.error("failed to load library list from '" + sUrl + "': " + status + ", " + e);
-				fnCallback(null);
-			},
-			success : function(oAppInfo, sStatus, oXHR) {
-				if (!oAppInfo) {
-					Log.error("failed to load library list from '" + sUrl + "': " + sStatus + ", Data: " + oAppInfo);
+		if (_oAppInfo){
+			fnCallback(_oAppInfo);
+		} else {
+			jQuery.ajax({
+				url: sUrl,
+				dataType: "json",
+				error: function(xhr, status, e) {
+					Log.error("failed to load library list from '" + sUrl + "': " + status + ", " + e);
 					fnCallback(null);
-					return;
+				},
+				success : function(oAppInfo, sStatus, oXHR) {
+					if (!oAppInfo) {
+						Log.error("failed to load library list from '" + sUrl + "': " + sStatus + ", Data: " + oAppInfo);
+						fnCallback(null);
+						return;
+					}
+					_oAppInfo = oAppInfo;
+					fnCallback(oAppInfo);
 				}
-
-				fnCallback(oAppInfo);
-			}
-		});
+			});
+		}
 	};
 
 	/**
