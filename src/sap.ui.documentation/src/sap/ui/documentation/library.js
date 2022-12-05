@@ -5,7 +5,7 @@
 /**
  * Initialization Code and shared classes of library sap.ui.documentation.
  */
- sap.ui.define([
+sap.ui.define([
     "sap/ui/thirdparty/jquery",
     'sap/ui/core/util/LibraryInfo',
     "sap/base/Log",
